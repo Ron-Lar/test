@@ -1,4 +1,4 @@
-  blueprint:
+blueprint:
   name: Where Did I Park My Car
   description: Saves your car's location when you press a designated input button.
   domain: automation 
