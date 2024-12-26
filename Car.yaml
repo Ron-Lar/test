@@ -1,0 +1,41 @@
+yaml:
+  blueprint:
+  name: Where Did I Park My Car
+  description: Saves your car's location when you press a designated input button.
+  domain: automation 
+
+  input:  # User-configurable inputs
+    car_location_input_text:
+      name: Location Storage
+      description: Input Text helper to store car's coordinates
+      selector:
+        entity:
+          domain: input_text 
+    
+    location_button:
+      name: Parking Location Button
+      description: The input button that triggers the automation
+      selector:
+        entity:
+          domain: input_button
+
+trigger:
+  - platform: state
+    entity_id:
+      - location_button
+action:
+    - variables:
+      userid: "{{ trigger.from_state.context.user_id }}"
+      username: |
+        {% for person in states.person if person.attributes.user_id == userid %}
+          {{ person.attributes.friendly_name | lower }}
+        {%- else -%} 
+          unknown
+        {% endfor %} 
+  - service: input_text.set_value
+    data_template:
+      value: >
+        {{ state_attr('person.' + username, 'latitude') }},{{
+        state_attr('person.' + username, 'longitude') }}
+    target:
+      entity_id: car_location_input_text
